@@ -1,6 +1,4 @@
 "use client";
-
-import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAtomValue, useAtom } from "jotai";
 import { isAdminModeAtom, isCompactModeAtom, websitesAtom } from "@/lib/atoms";
@@ -15,23 +13,30 @@ import { Globe } from "lucide-react";
 interface WebsiteGridProps {
   websites: Website[];
   categories: Category[];
-  onVisit: (website: Website) => void;
+  // onVisit: (website: Website) => void;
   className?: string;
 }
 
 export default function WebsiteGrid({
   websites,
   categories,
-  onVisit,
   className,
 }: WebsiteGridProps) {
   const isAdmin = useAtomValue(isAdminModeAtom);
   const { toast } = useToast();
   const [isCompact, setIsCompact] = useAtom(isCompactModeAtom);
-  const [_, setWebsites] = useAtom(websitesAtom);
+  const [, setWebsites] = useAtom(websitesAtom);
 
   const handleVisit = async (website: Website) => {
     fetch(`/api/websites/${website.id}/visit`, { method: "POST" });
+    fetch(`/api/websites/active`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ url: website.url, id: website.id }),
+    });
+
     window.open(website.url, "_blank");
   };
 
